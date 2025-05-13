@@ -1,9 +1,57 @@
-
-import React from 'react';
+import React, { useRef, useState, FormEvent } from 'react';
 import { Send } from 'lucide-react';
 import SocialLinks from './SocialLinks';
+import emailjs from '@emailjs/browser';
 
 const ContactSection = () => {
+  const form = useRef<HTMLFormElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const sendEmail = (e: FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    // Validate environment variables
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      setError('There was an issue with the email service configuration. Please contact support or try again later.');
+      setIsLoading(false);
+      console.error('Missing environment variables:', {
+        VITE_EMAILJS_SERVICE_ID: serviceId,
+        VITE_EMAILJS_TEMPLATE_ID: templateId,
+        VITE_EMAILJS_PUBLIC_KEY: publicKey,
+      });
+      return;
+    }
+
+    if (form.current) {
+      emailjs
+        .sendForm(serviceId, templateId, form.current, publicKey)
+        .then(
+          (result) => {
+            console.log('Email sent successfully:', result.text);
+            setSuccess("Your message has been sent successfully. I'll get back to you soon!");
+            form.current?.reset();
+          },
+          (error) => {
+            console.error('EmailJS error:', error);
+            setError('There was an issue sending your message: ' + (error.text || 'An unexpected error occurred. Please try again later.'));
+          }
+        )
+        .finally(() => setIsLoading(false));
+    } else {
+      setError('There was an issue processing your request. Please refresh the page and try again.');
+      setIsLoading(false);
+    }
+  };
+
   return (
     <section id="contact" className="py-24 relative">
       {/* Background gradient elements */}
@@ -20,15 +68,17 @@ const ContactSection = () => {
         </p>
         
         <div className="max-w-3xl mx-auto glass-card rounded-xl p-8 md:p-10 opacity-0 animate-fade-in" style={{ animationDelay: '200ms' }}>
-          <form className="space-y-6">
+          <form ref={form} onSubmit={sendEmail} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label htmlFor="name" className="block text-sm font-medium text-white/80">Name</label>
                 <input
                   type="text"
                   id="name"
+                  name="from_name"
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent text-white"
                   placeholder="Your name"
+                  required
                 />
               </div>
               
@@ -37,8 +87,10 @@ const ContactSection = () => {
                 <input
                   type="email"
                   id="email"
+                  name="reply_to"
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent text-white"
                   placeholder="Your email"
+                  required
                 />
               </div>
             </div>
@@ -48,8 +100,10 @@ const ContactSection = () => {
               <input
                 type="text"
                 id="subject"
+                name="subject"
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent text-white"
                 placeholder="Subject"
+                required
               />
             </div>
             
@@ -57,17 +111,23 @@ const ContactSection = () => {
               <label htmlFor="message" className="block text-sm font-medium text-white/80">Message</label>
               <textarea
                 id="message"
+                name="message"
                 rows={5}
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent text-white resize-none"
                 placeholder="Your message"
+                required
               ></textarea>
             </div>
+            
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {success && <p className="text-green-500 text-sm">{success}</p>}
             
             <button
               type="submit"
               className="w-full px-6 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+              disabled={isLoading}
             >
-              <span>Send Message</span>
+              <span>{isLoading ? 'Sending...' : 'Send Message'}</span>
               <Send size={18} />
             </button>
           </form>
