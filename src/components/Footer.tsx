@@ -16,7 +16,7 @@ const Footer = () => {
           
           <div className="flex flex-col items-center md:items-end gap-4">
             <SocialLinks />
-            <p className="text-white/60 text-sm">© {currentYear} Your Name. All rights reserved.</p>
+            <p className="text-white/60 text-sm">© {currentYear} Yuvraj. All rights reserved.</p>
           </div>
         </div>
       </div>
