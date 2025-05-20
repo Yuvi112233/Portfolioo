@@ -32,7 +32,7 @@ const AboutSection = () => {
             
             <div className="space-y-4 text-white/80">
               <p className="opacity-0 animate-fade-in" style={{ animationDelay: '300ms' }}>
-                I'm a passionate full-stack developer with a focus on creating beautiful, performant, and accessible web applications. With over 2 years of experience in the industry, I've worked on a diverse range of projects from small business websites to large-scale enterprise applications.
+                I'm a passionate full-stack developer with a focus on creating beautiful, performant, and accessible web applications. With over 5 years of experience in the industry, I've worked on a diverse range of projects from small business websites to large-scale enterprise applications.
               </p>
               
               <p className="opacity-0 animate-fade-in" style={{ animationDelay: '400ms' }}>
