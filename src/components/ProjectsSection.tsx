@@ -17,7 +17,7 @@ const ProjectsSection = () => {
       description: 'Ai-powered mental & physical health assistant for personalized diagnosis using NLP and mediacl intelligence  ',
       technologies: ['Html,Css,Javascript', 'Flask', 'React', 'Python'],
       image: "/test.png",
-      liveUrl: 'https://ai-healthcare-flmy.onrender.com/',
+      liveUrl: 'https://healthbox-pbn4.onrender.com/',
       githubUrl: 'https://github.com/Yuvi112233/Ai-Healthcare',
     },
     {
